@@ -50,13 +50,9 @@ def get_pre_market_price(symbol):
         post_message(myToken, "#stock", f'종목 발견!\n종목명: {symbol}, 매수 목표가: ${target_price}, {pre_market_price}')
 
 
-n = 0
-
 for item in symbol_list:
     try:
         get_pre_market_price(item)
-        n += 1
-        print(n)
     except AttributeError:
         print(f"Can't find '{item}' price")
     except pandas_datareader._utils.RemoteDataError:
