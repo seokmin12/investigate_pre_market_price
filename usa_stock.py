@@ -5,6 +5,7 @@ import urllib3
 from bs4 import BeautifulSoup
 import requests
 import FinanceDataReader as fdr
+from datetime import datetime
 
 
 def post_message(token, channel, text):
@@ -14,14 +15,14 @@ def post_message(token, channel, text):
                              )
 
 
-myToken = 'xoxb-2156144661187-2156398723651-WuF3QEof1nEuuhjB3e4TwY1J'
+myToken = 'xoxb-2156144661187-2146332357367-UtTQWQieMzYbwTInoDDKxCTs'
 
 df_nasdaq = fdr.StockListing('NASDAQ')
 symbols = list(df_nasdaq['Symbol'])
 symbol_list = []
 for i in symbols:
     symbol_list.append(i.lower())
-print("실행중...")
+print("Working...")
 
 
 def get_pre_market_price(symbol):
@@ -46,16 +47,17 @@ def get_pre_market_price(symbol):
         pre_market_price = 'Pre. ' + pre_market_rate
 
     if float(pre_market_rate[0]) >= target_price:
-        print(f'종목명: {symbol}, 매수 목표가: ${target_price}, {pre_market_price}')
-        post_message(myToken, "#stock", f'종목 발견!\n종목명: {symbol}, 매수 목표가: ${target_price}, {pre_market_price}')
+        print(f'{datetime.now()} - Symbol: {symbol}, Target_Price: ${target_price}, {pre_market_price}')
+        post_message(myToken, "#stock", f'Find Stock!\nSymbol: {symbol}, Target_Price: ${target_price}, {pre_market_price}')
+
 
 
 for item in symbol_list:
     try:
         get_pre_market_price(item)
     except AttributeError:
-        print(f"Can't find '{item}' price")
+        print(f"{datetime.now()} - Can't find '{item}' price")
     except pandas_datareader._utils.RemoteDataError:
-        print(f"'{item}' is delisted")
+        print(f"{datetime.now()} - '{item}' is delisted")
     except (socket.timeout, requests.exceptions.ReadTimeout, urllib3.exceptions.ReadTimeoutError):
-        print("Timeout")
+        print(f"{datetime.now()} - Timeout")
