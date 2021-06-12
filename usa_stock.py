@@ -6,16 +6,10 @@ from bs4 import BeautifulSoup
 import requests
 import FinanceDataReader as fdr
 from datetime import datetime
+import telegram
 
-
-def post_message(token, channel, text):
-    response = requests.post("https://slack.com/api/chat.postMessage",
-                             headers={"Authorization": "Bearer " + token},
-                             data={"channel": channel, "text": text}
-                             )
-
-
-myToken = 'xoxb-2156144661187-2146332357367-UtTQWQieMzYbwTInoDDKxCTs'
+telegram_token = '1889300393:AAGepkcu0Qn8vnQDztt1_2o2Gz19LgsKaoM'
+bot = telegram.Bot(token=telegram_token)
 
 df_nasdaq = fdr.StockListing('NASDAQ')
 symbols = list(df_nasdaq['Symbol'])
@@ -48,13 +42,16 @@ def get_pre_market_price(symbol):
 
     if float(pre_market_rate[0]) >= target_price:
         print(f'{datetime.now()} - Symbol: {symbol}, Target_Price: ${target_price}, {pre_market_price}')
-        post_message(myToken, "#stock", f'Find Stock!\nSymbol: {symbol}, Target_Price: ${target_price}, {pre_market_price}')
+        bot.sendMessage(chat_id='1832322351', text=f'{datetime.now()} - Symbol: {symbol}, Target_Price: ${target_price}, {pre_market_price}')
 
 
+n = 0
 
 for item in symbol_list:
     try:
         get_pre_market_price(item)
+        n += 1
+        print(n)
     except AttributeError:
         print(f"{datetime.now()} - Can't find '{item}' price")
     except pandas_datareader._utils.RemoteDataError:
